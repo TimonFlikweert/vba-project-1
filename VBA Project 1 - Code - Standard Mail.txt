@@ -1,0 +1,58 @@
+Public Sub CheckAndSendMail()
+Dim xRgDate As Range
+Dim xRgSend As Range
+Dim xRgText As Range
+Dim xRgDone As Range
+Dim xOutApp As Object
+Dim xMailItem As Object
+Dim xLastRow As Long
+Dim vbCrLf As String
+Dim xMailBody As String
+Dim xRgDateVal As String
+Dim xRgSendVal As String
+Dim xMailSubject As String
+Dim i As Long
+On Error Resume Next
+xStrRang = "G2:G12"
+Set xRgDate = Range(xStrRang)
+xStrRang = "A2:A12"
+Set xRgSend = Range(xStrRang)
+xStrRang = "B2:B12"
+Set xRgCC = Range(xStrRang)
+xStrRang = "C2:C12"
+Set xRgText = Range(xStrRang)
+xLastRow = xRgDate.Rows.Count
+Set xRgDate = xRgDate(1)
+Set xRgSend = xRgSend(1)
+Set xRgCC = xRgCC(1)
+Set xRgText = xRgText(1)
+Set xOutApp = CreateObject("Outlook.Application")
+For i = 1 To xLastRow
+xRgDateVal = ""
+xRgDateVal = xRgDate.Offset(i - 1).Value
+If xRgDateVal <> "" Then
+If CDate(xRgDateVal) - Date <= 7 And CDate(xRgDateVal) - Date = 0 Then
+xRgSendVal = xRgSend.Offset(i - 1).Value
+xRgCCVal = xRgCC.Offset(i - 1).Value
+xMailSubject = xRgText.Offset(i - 1).Value & " on " & xRgDateVal
+vbCrLf = "<br><br>"
+xMailBody = ""
+xMailBody = xMailBody & "Hallo collega," & vbCrLf
+xMailBody = xMailBody & xRgText.Offset(i - 1).Value & "<br>" & "Kan je deze gegevens binnen drie werkdagen naar mij mailen?" & vbCrLf
+xMailBody = xMailBody & "Alvast bedankt." & vbCrLf
+xMailBody = xMailBody & "Met vriendelijke groet," & "<br>" & "Timon" & vbCrLf
+xMailBody = xMailBody & "Deze mail is automatisch gegenereerd." & "<br>" & "Reageren op deze mail kan echter wel." & vbCrLf
+Set xMailItem = xOutApp.CreateItem(0)
+With xMailItem
+.Subject = "Verzoek om gegevens over de KPI's voor deze maand"
+.To = xRgSendVal
+.Cc = xRgCCVal
+.HTMLBody = xMailBody
+.Send
+End With
+Set xMailItem = Nothing
+End If
+End If
+Next
+Set xOutApp = Nothing
+End Sub
